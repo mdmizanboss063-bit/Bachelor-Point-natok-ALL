@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bachelor Point Season 5</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -11,314 +11,160 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-:root{
---primary:#e63946;
---secondary:#1d3557;
-}
-
-body{
-margin:0;
-font-family:'Segoe UI',sans-serif;
-background:#f0f2f5;
-padding-bottom:90px;
-}
-
-/* TOP BLACK BAR */
-.top-black{background:#000;height:28px}
-
-/* HEADER */
-.header{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-padding:35px 20px 55px;
-text-align:center;
-color:#fff;
-border-radius:0 0 40px 40px;
-}
-
-.header h1{
-margin:0;
-font-size:22px;
-font-weight:900;
-}
-
-.sub-bar{
-margin:12px auto 0;
-width:120px;
-height:4px;
-border-radius:5px;
-background:linear-gradient(90deg,#ffd166,#06d6a0);
-}
-
-/* FOLDER BAR */
-.folder-bar{
-display:flex;
-gap:12px;
-justify-content:center;
-margin:-25px 20px 15px;
-padding:12px;
-background:#fff;
-border-radius:18px;
-box-shadow:0 8px 20px rgba(0,0,0,.15);
-}
-
-.folder-btn{
-padding:10px 18px;
-border-radius:14px;
-border:2px solid var(--primary);
-background:transparent;
-color:var(--primary);
-font-weight:bold;
-font-size:13px;
-cursor:pointer;
-transition:.3s;
-}
-
-.folder-btn.active{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:#fff;
-border:none;
-}
-
-/* SEARCH */
-.search-box{
-margin:0 20px 15px;
-background:#fff;
-border-radius:18px;
-padding:15px;
-box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-
-.search-box input{
-width:100%;
-border:none;
-outline:none;
-font-size:16px;
-}
-
-/* CONTENT */
-.main-content{
-padding:10px 20px;
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-gap:18px;
-}
-
-.card{
-background:#fff;
-border-radius:22px;
-overflow:hidden;
-box-shadow:0 8px 18px rgba(0,0,0,.08);
-}
-
-.thumb-box{height:165px;background:#ddd}
-.thumb-box img{width:100%;height:100%;object-fit:cover}
-
-.card-details{padding:15px;text-align:center}
-
-.unlock-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
-font-weight:bold;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:#fff;
-}
-
-.locked-btn{background:#555}
-.download-btn{background:linear-gradient(135deg,#00c853,#007a33)}
-
-#verify-overlay{
-display:none;
-position:fixed;
-bottom:0;left:0;
-width:100%;
-height:65px;
-background:#fff;
-border-top:4px solid #000;
-z-index:9999;
-align-items:center;
-justify-content:center;
-gap:15px;
-}
-
-#countdown-display{
-font-size:30px;
-font-weight:900;
-background:#eee;
-padding:3px 16px;
-border-radius:12px;
-}
+:root{--p:#e63946;--s:#1d3557}
+body{margin:0;font-family:sans-serif;background:#f0f2f5;padding-bottom:90px}
+.header{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;text-align:center;padding:35px;border-radius:0 0 35px 35px}
+.folder{display:flex;gap:10px;justify-content:center;margin:-25px 15px 15px}
+.folder button{padding:10px 18px;border-radius:15px;border:2px solid var(--p);background:#fff;font-weight:bold}
+.folder .active{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border:none}
+.search{padding:0 20px}
+.search input{width:100%;padding:14px;border-radius:15px;border:2px solid #ddd}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:20px}
+.card{background:#fff;border-radius:25px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.thumb img{width:100%;height:170px;object-fit:cover}
+.card-body{padding:15px;text-align:center}
+.card-body h3{font-size:16px;margin:5px 0 10px}
+.card-body small{display:flex;justify-content:space-between;margin-bottom:10px;font-weight:bold}
+button.main{width:100%;padding:14px;border-radius:15px;border:none;font-size:15px;font-weight:bold}
+.unlock{background:linear-gradient(135deg,var(--p),var(--s));color:#fff}
+.download{background:linear-gradient(135deg,#00c853,#007a33);color:#fff}
+.locked{background:#eee;color:#777}
+#overlay{display:none;position:fixed;bottom:0;left:0;width:100%;height:65px;
+background:#000;color:#fff;z-index:9999;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
 </style>
 </head>
 
 <body>
 
-<div class="top-black"></div>
-
-<div id="verify-overlay">
-<div id="countdown-display">10</div>
-<div style="font-size:13px;font-weight:bold">
-বিজ্ঞাপন যাচাই চলছে...<br>
-<span style="font-size:11px;color:#555;font-weight:normal">
-ফিরে এলে অটো চেক হবে
-</span>
-</div>
-</div>
+<div id="overlay">⏳ বিজ্ঞাপন যাচাই হচ্ছে...</div>
 
 <div class="header">
-<h1>Bachelor Point Season 5</h1>
-<div class="sub-bar"></div>
+<h2>Bachelor Point</h2>
+<p>Season 5</p>
 </div>
 
-<!-- 📁 FOLDERS -->
-<div class="folder-bar">
-<button class="folder-btn active" onclick="setFolder('ALL',this)">📁 ALL</button>
-<button class="folder-btn" onclick="setFolder('BP S5',this)">📁 BP S5</button>
+<div class="folder">
+<button class="active" onclick="setCat('All',this)">📁 ALL</button>
+<button onclick="setCat('BP S5',this)">📁 BP S5</button>
 </div>
 
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="এপিসোড নাম্বার লিখুন..." oninput="renderUI()">
+<div class="search">
+<input id="searchBox" placeholder="Episode নাম্বার লিখুন..." oninput="render()">
 </div>
 
-<div class="main-content" id="video-display">লোড হচ্ছে...</div>
+<div class="grid" id="videos">লোড হচ্ছে...</div>
 
 <script>
-const firebaseConfig={databaseURL:"https://bachelor-point-season-5-default-rtdb.firebaseio.com/"}
-firebase.initializeApp(firebaseConfig)
-const db=firebase.database()
-const tg=window.Telegram.WebApp
-tg.expand()
+/* ===== CONFIG ===== */
+const REQUIRED_SEC = 10;
+const LOCK_TIME = 24*60*60*1000;
+const BOT_USERNAME = "Bachelor_Point_Season_5_ep_bot";
 
-const REQUIRED_SEC=10
-const LOCK_TIME=24*60*60*1000
-const BOT_USERNAME="Bachelor_Point_Season_5_ep_bot"
+/* ===== INIT ===== */
+const tg = Telegram.WebApp; tg.expand();
+firebase.initializeApp({databaseURL:"https://bachelor-point-season-5-default-rtdb.firebaseio.com/"});
+const db = firebase.database();
 
-let allVideos={}
-let currentFolder="ALL"
-let countdownTimer=null
+let allVideos={}, currentCat="All", timer=null;
 
-db.ref("videos").on("value",snap=>{
-allVideos=snap.val()||{}
-renderUI()
-})
+/* ===== LOAD ===== */
+db.ref("videos").on("value",s=>{
+  allVideos=s.val()||{};
+  render();
+});
 
-function setFolder(folder,btn){
-currentFolder=folder
-document.querySelectorAll(".folder-btn").forEach(b=>b.classList.remove("active"))
-btn.classList.add("active")
-renderUI()
+/* ===== CATEGORY ===== */
+function setCat(c,b){
+ currentCat=c;
+ document.querySelectorAll(".folder button").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");
+ render();
 }
 
-function renderUI(){
-const box=document.getElementById("video-display")
-const search=document.getElementById("searchInput").value.replace(/\D/g,"")
-box.innerHTML=""
+/* ===== RENDER ===== */
+function render(){
+ const q=document.getElementById("searchBox").value.trim();
+ const box=document.getElementById("videos");
+ box.innerHTML="";
+ for(let id in allVideos){
+  const v=allVideos[id];
+  if(currentCat!=="All" && v.category!==currentCat) continue;
+  if(q && !v.name.match(new RegExp("Episode\\s*"+q,"i"))) continue;
 
-for(let id in allVideos){
-const v=allVideos[id]
+  const step=parseInt(localStorage.getItem("step_"+id)||0);
+  const lock=parseInt(localStorage.getItem("lock_"+id)||0);
+  const total=v.ads.length;
 
-if(currentFolder!=="ALL" && v.category!==currentFolder) continue
+  let btnClass="unlock",btnText="🔒 Unlock Video",action=`startAd('${id}')`;
 
-if(search){
-const m=v.name.match(/Episode\s*(\d+)/i)
-if(!m || !m[1].includes(search)) continue
+  if(lock && Date.now()<lock){
+    btnClass="locked"; btnText="📩 ইনবক্স চেক করো";
+    action=`lockedNotice()`;
+  }else if(step>=total){
+    btnClass="download"; btnText="📥 Download Video";
+    action=`download('${id}')`;
+  }
+
+  box.innerHTML+=`
+  <div class="card">
+    <div class="thumb"><img src="${v.photo}"></div>
+    <div class="card-body">
+      <h3>${v.name}</h3>
+      <small><span>ধাপ: ${step}/${total}</span><span>${v.category}</span></small>
+      <button class="main ${btnClass}" onclick="${action}">${btnText}</button>
+    </div>
+  </div>`;
+ }
 }
 
-let step=parseInt(localStorage.getItem("step_"+id))||0
-let last=localStorage.getItem("time_"+id)
-let locked=last && (Date.now()-last<LOCK_TIME)
-
-let txt="🔒 UNLOCK VIDEO",cls="unlock-btn"
-if(locked){txt="🚫 ইনবক্স চেক করুন";cls+=" locked-btn"}
-else if(step>=v.ads.length){txt="📥 GET DOWNLOAD";cls+=" download-btn"}
-
-box.innerHTML+=`
-<div class="card">
-<div class="thumb-box"><img src="${v.photo}"></div>
-<div class="card-details">
-<h4>${v.name}</h4>
-<p style="font-size:12px;font-weight:bold">ধাপ: ${step}/${v.ads.length}</p>
-<button class="${cls}" onclick="handleAction('${id}')">${txt}</button>
-</div>
-</div>`
-}
+/* ===== AD START ===== */
+function startAd(id){
+ const v=allVideos[id];
+ localStorage.setItem("ad","1");
+ localStorage.setItem("ad_id",id);
+ localStorage.setItem("ad_start",Date.now());
+ document.getElementById("overlay").style.display="flex";
+ tg.openLink(v.ads[parseInt(localStorage.getItem("step_"+id)||0)]);
 }
 
-function handleAction(id){
-let last=localStorage.getItem("time_"+id)
-if(last && Date.now()-last<LOCK_TIME)return
+/* ===== VERIFY ===== */
+function verify(){
+ if(localStorage.getItem("ad")!=="1") return;
+ const spent=Math.floor((Date.now()-parseInt(localStorage.getItem("ad_start")))/1000);
+ const id=localStorage.getItem("ad_id");
+ localStorage.removeItem("ad");
+ document.getElementById("overlay").style.display="none";
 
-const ads=allVideos[id].ads
-let step=parseInt(localStorage.getItem("step_"+id))||0
-
-if(step>=ads.length){
-Swal.fire("সফল","ভিডিও ইনবক্সে পাঠানো হয়েছে","success").then(()=>{
-localStorage.setItem("time_"+id,Date.now())
-localStorage.setItem("step_"+id,"0")
-location.href=`https://t.me/${BOT_USERNAME}?start=${id}`
-})
-return
+ if(spent>=REQUIRED_SEC){
+   localStorage.setItem("step_"+id,(parseInt(localStorage.getItem("step_"+id)||0)+1));
+   Swal.fire("সফল","১০ সেকেন্ড সম্পূর্ণ হয়েছে","success").then(render);
+ }else{
+   Swal.fire("অসম্পূর্ণ",
+   `আপনি ${spent} সেকেন্ড ছিলেন। আরও ${REQUIRED_SEC-spent} সেকেন্ড থাকতে হতো।`,
+   "error");
+ }
 }
 
-localStorage.setItem("ad_active","true")
-localStorage.setItem("start_time",Date.now())
-localStorage.setItem("active_vid",id)
-localStorage.setItem("active_step",step)
-
-document.getElementById("verify-overlay").style.display="flex"
-document.getElementById("countdown-display").innerText=REQUIRED_SEC
-
-startCountdown()
-tg.openLink(ads[step])
+/* ===== DOWNLOAD ===== */
+function download(id){
+ localStorage.setItem("lock_"+id,Date.now()+LOCK_TIME);
+ localStorage.setItem("step_"+id,0);
+ Swal.fire("ডাউনলোড পাঠানো হয়েছে","ইনবক্স চেক করুন","success")
+ .then(()=>location.href=`https://t.me/${BOT_USERNAME}?start=${id}`);
+ render();
 }
 
-function startCountdown(){
-clearInterval(countdownTimer)
-countdownTimer=setInterval(()=>{
-if(localStorage.getItem("ad_active")==="true"){
-const start=parseInt(localStorage.getItem("start_time"))
-const diff=Math.floor((Date.now()-start)/1000)
-document.getElementById("countdown-display").innerText=
-Math.max(REQUIRED_SEC-diff,0)
-}
-},1000)
+/* ===== LOCK NOTICE ===== */
+function lockedNotice(){
+ Swal.fire("লক করা আছে",
+ "আপনি অলরেডি ভিডিও ডাউনলোড করেছেন। ২৪ ঘন্টা পর আবার চেষ্টা করুন।",
+ "info");
 }
 
-function performVerification(){
-if(localStorage.getItem("ad_active")!=="true")return
-
-const start=parseInt(localStorage.getItem("start_time"))
-const diff=Math.floor((Date.now()-start)/1000)
-const remaining=REQUIRED_SEC-diff
-
-clearInterval(countdownTimer)
-document.getElementById("verify-overlay").style.display="none"
-
-if(diff>=REQUIRED_SEC){
-const vid=localStorage.getItem("active_vid")
-const step=parseInt(localStorage.getItem("active_step"))||0
-localStorage.setItem("step_"+vid,step+1)
-Swal.fire("✅ সফল","১০ সেকেন্ড পূর্ণ হয়েছে","success")
-renderUI()
-}else{
-Swal.fire("❌ অসম্পূর্ণ",
-`আপনি ${diff} সেকেন্ড ছিলেন।
-আরও ${remaining} সেকেন্ড থাকতে হবে।`,
-"error")
-}
-
-localStorage.clear()
-}
-
-document.addEventListener("visibilitychange",()=>{
-if(document.visibilityState==="visible" &&
-localStorage.getItem("ad_active")==="true"){
-location.reload()
-}
-})
-
-window.onload=performVerification
+/* ===== LIFE CYCLE ===== */
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")verify();});
+window.addEventListener("pageshow",verify);
+window.onfocus=verify;
 </script>
 
 </body>
